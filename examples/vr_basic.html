@@ -86,10 +86,11 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body onload="init_gn()">
 		<script src="./lib/three.min.js" type="text/javascript"></script>
 		<script src="./lib/CSS3DRenderer.js" type="text/javascript"></script>
-
+		<script src="./lib/gyronorm.min.js"></script>
+		
 		<script src="../js/DeviceOrientationController.js" type="text/javascript"></script>
 
 		<aside id="calibrate-compass-popup" class="popup">
@@ -106,6 +107,76 @@
 		</div>
 
 		<script type="text/javascript">
+
+			// Init Gyronorm.js
+			// 
+			var gn;
+			var data;
+
+			function init_gn(){
+				var args = {
+					ready:ongnReady,
+					frequency:1,                   // ( how often the object sends the values - milliseconds )
+			    gravityNormalized:true,         // ( if the garvity related values to be normalized )
+			    directionAbsolute:false,        // ( if the do.alpha value is absolute, if false the value is relative to the initial position of the device )
+			    decimalCount:8     
+				};
+				gn = new GyroNorm(args);
+			}	
+
+			var ongnReady = function(){
+				
+				start_gn();
+			}
+
+			function stop_gn(){
+				gn.stop();
+			}
+
+			function start_gn(){
+				gn.start(gnCallBack);
+			}
+
+			function gnCallBack(_data){
+				data = _data;
+			}
+
+			function abs_gn(){
+				gn.giveAbsoluteDirection(true);
+			}
+
+			function rel_gn(){
+				gn.giveAbsoluteDirection(false);
+			}
+
+			function norm_gn(){
+				gn.normalizeGravity(true);
+			}
+
+			function org_gn(){
+				gn.normalizeGravity(false);
+			}
+
+			function set_head_gn(){
+				gn.setHeadDirection();
+			}
+
+			function showDO(){
+				$('#do').show();
+				$('#dm').hide();
+				$('#btn-dm').removeClass('selected');
+				$('#btn-do').addClass('selected');
+			}
+
+			function showDM(){
+				$('#dm').show();
+				$('#do').hide();
+				$('#btn-do').removeClass('selected');
+				$('#btn-dm').addClass('selected');
+			}
+
+
+			// Init ThreeVR
 
 			var camera, scene, renderer, controls;
 
